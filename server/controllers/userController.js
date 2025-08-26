@@ -68,8 +68,8 @@ const loginUser = async (req, res) => {
         // Create a session for the user
         req.session.userId = user._id;
 
-        // Redirect to a new profile page
-        res.redirect('/users/profile');
+        // Redirect to a dashboard
+        res.redirect('/users/dashboard');
 
     } catch (error) {
         console.error('Error during login:', error);
@@ -130,6 +130,17 @@ const addSkillNeeded = async (req, res) => {
     }
 };
 
+const showDashboard = async (req, res) => {
+    try {
+        // Find all users EXCEPT the currently logged-in user
+        const users = await User.find({ _id: { $ne: req.session.userId } });
+        res.render('dashboard', { title: 'Dashboard', users: users });
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
+};
+
+
 module.exports = {
     showRegisterPage,
     registerUser,
@@ -139,4 +150,5 @@ module.exports = {
     logoutUser,
     addSkillOffered,
     addSkillNeeded,
+    showDashboard,
 };

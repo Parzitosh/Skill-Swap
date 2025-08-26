@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %> - SkillSwap</title>
+</head>
+<body>
+    <nav>
+        <a href="/users/dashboard">Dashboard</a> |
+        <a href="/users/profile">My Profile</a> |
+        <a href="/users/logout">Logout</a>
+    </nav>
+    <hr>
+    <h1>User Dashboard</h1>
+    <p>Find other users to swap skills with!</p>
+
+    <% if (users && users.length > 0) { %>
+        <% users.forEach(user => { %>
+            <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+                <h3><%= user.name %></h3>
+                <p>
+                    <strong>Offers:</strong> 
+                    <%= user.skillsOffered.join(', ') || 'None' %>
+                </p>
+                <p>
+                    <strong>Needs:</strong> 
+                    <%= user.skillsNeeded.join(', ') || 'None' %>
+                </p>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <p>No other users have registered yet.</p>
+    <% } %>
+</body>
+</html>
