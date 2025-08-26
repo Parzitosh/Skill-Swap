@@ -65,13 +65,47 @@ const loginUser = async (req, res) => {
             return res.status(400).send('Invalid email or password.');
         }
 
-        // If login is successful
-        res.status(200).send('Login successful! Welcome back.');
+        // Create a session for the user
+        req.session.userId = user._id;
+
+        // Redirect to a new profile page
+        res.redirect('/users/profile');
 
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).send('Server error during login.');
     }
+};
+
+const showProfilePage = async (req, res) => {
+    try {
+        // Find the user by the ID stored in the session
+        const user = await User.findById(req.session.userId);
+
+        if (!user) {
+            // If no user is found, redirect to login
+            return res.redirect('/users/login');
+        }
+
+        //debugging line
+        console.log('User data being sent to profile page:', user);
+
+        // Render the profile page and pass the user object to it
+        res.render('profile', { user: user });
+
+    } catch (error) {
+        console.error("Error fetching user for profile:", error);
+        res.status(500).send('Server Error');
+    }
+};
+const logoutUser = (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.redirect('/users/profile');
+        }
+        res.clearCookie('connect.sid'); // Clears the session cookie
+        res.redirect('/users/login');
+    });
 };
 
 
@@ -80,4 +114,6 @@ module.exports = {
     registerUser,
     showLoginPage,
     loginUser,
+    showProfilePage,
+    logoutUser,
 };

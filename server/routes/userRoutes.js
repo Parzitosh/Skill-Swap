@@ -16,4 +16,10 @@ router.get('/login', userController.showLoginPage);
 // Handle the login form submission
 router.post('/login', userController.loginUser);
 
+// Profile page route
+router.get('/profile', userController.showProfilePage);
+
+// Logout route
+router.get('/logout', userController.logoutUser);
+
 module.exports = router;
