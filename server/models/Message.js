@@ -1,26 +1,25 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const requestSchema = new Schema({
-    fromUser: {
+const messageSchema = new Schema({
+    room: { // This will be the ID of the Request
+        type: Schema.Types.ObjectId,
+        ref: 'Request',
+        required: true,
+    },
+    sender: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
-    toUser: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
-    status: {
+    text: {
         type: String,
-        enum: ['pending', 'accepted', 'rejected'],
-        default: 'pending',
+        required: true,
     },
 }, {
     timestamps: true,
 });
 
-const Request = mongoose.model('Request', requestSchema);
+const Message = mongoose.model('Message', messageSchema);
 
-module.exports = Request;
+module.exports = Message;

@@ -3,6 +3,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs'); // Import bcrypt
 const Request = require('../models/Request'); // Import the new Request model
+const Message = require('../models/Message');
 
 const showRegisterPage = (req, res) => {
     res.render('register', { title: 'Register' });
@@ -185,11 +186,15 @@ const rejectRequest = async (req, res) => {
 const showChatPage = async (req, res) => {
     try {
         const request = await Request.findById(req.params.id);
-        // Security check: ensure the current user is part of this request
         if (request.fromUser.toString() !== req.session.userId && request.toUser.toString() !== req.session.userId) {
             return res.status(403).send('Not authorized');
         }
-        res.render('chat', { title: 'Chat', requestId: request._id });
+
+        // Fetch message history for this room and get the sender's name
+        const messages = await Message.find({ room: request._id }).sort({ createdAt: 1 }).populate('sender', 'name');
+        const user = await User.findById(req.session.userId); // Get current user's details
+
+        res.render('chat', { title: 'Chat', requestId: request._id, messages: messages, user: user });
     } catch (error) {
         res.status(500).send('Server Error');
     }

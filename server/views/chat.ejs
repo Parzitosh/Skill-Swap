@@ -6,7 +6,11 @@
 </head>
 <body>
     <h1>Chat Room</h1>
-    <ul id="messages"></ul>
+    <ul id="messages">
+        <% messages.forEach(message => { %>
+            <li><strong><%= message.sender.name %>:</strong> <%= message.text %> <em>at <%= new Date(message.createdAt).toLocaleTimeString() %></em></li>
+        <% }) %>
+    </ul>
     <form id="chat-form">
         <input id="message-input" autocomplete="off" /><button>Send</button>
     </form>
@@ -17,16 +21,14 @@
         const chatForm = document.getElementById('chat-form');
         const messageInput = document.getElementById('message-input');
         const messages = document.getElementById('messages');
-        const room = '<%= requestId %>'; // Get the room ID from the server
+        const room = '<%= requestId %>';
+        const currentUser = { name: '<%= user.name %>' }; // Get current user's name
 
-        // Join the specific chat room
         socket.emit('joinRoom', { room });
 
-        // Listen for form submission
         chatForm.addEventListener('submit', (e) => {
             e.preventDefault();
             if (messageInput.value) {
-                // Send message to the server
                 socket.emit('chatMessage', { room, message: messageInput.value });
                 messageInput.value = '';
             }
@@ -35,7 +37,7 @@
         // Listen for incoming messages
         socket.on('message', (msg) => {
             const item = document.createElement('li');
-            item.textContent = msg;
+            item.innerHTML = `<strong>${msg.sender.name}:</strong> ${msg.text} <em>at ${msg.createdAt}</em>`;
             messages.appendChild(item);
             window.scrollTo(0, document.body.scrollHeight);
         });
