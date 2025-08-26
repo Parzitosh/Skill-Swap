@@ -1,8 +1,13 @@
+// server/routes/userRoutes.js
+
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 
-// When a GET request is made to '/register', call the showRegisterPage function
+// This route shows the registration page
 router.get('/register', userController.showRegisterPage);
+
+// This new route handles the form submission
+router.post('/register', userController.registerUser);
 
 module.exports = router;

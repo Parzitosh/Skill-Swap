@@ -10,6 +10,9 @@ const PORT = 3000;
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// middleware to parse URL-encoded form data
+app.use(express.urlencoded({ extended: true }));
+
 // Tell the app to use the userRoutes for any URL starting with '/users'
 app.use('/users', userRoutes);
 app.get('/', (req, res) => {
