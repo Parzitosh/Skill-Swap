@@ -15,6 +15,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    skillsOffered: {
+        type: [String], // An array of strings
+        default: [],    // Defaults to an empty array
+    },
+    skillsNeeded: {
+        type: [String],
+        default: [],
+    },
 }, {
     timestamps: true, // Automatically adds createdAt and updatedAt fields
 });

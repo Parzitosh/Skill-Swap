@@ -2,13 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Your Profile</title>
+    <title>Your Profile - SkillSwap</title>
 </head>
 <body>
     <h1>Welcome, <%= user.name %>!</h1>
-    <p>This is your profile page.</p>
     <p>Your email is: <%= user.email %></p>
-    
+    <hr>
+
+    <h2>Skills I Can Offer:</h2>
+    <% if (user.skillsOffered && user.skillsOffered.length > 0) { %>
+        <ul>
+            <% user.skillsOffered.forEach(skill => { %>
+                <li><%= skill %></li>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <p>You haven't added any skills to offer yet.</p>
+    <% } %>
+
+    <form action="/users/profile/add-skill-offered" method="POST">
+        <input type="text" name="skill" placeholder="e.g., Python, Graphic Design" required>
+        <button type="submit">Add Skill to Offer</button>
+    </form>
+    <hr>
+
+    <h2>Skills I Need:</h2>
+    <% if (user.skillsNeeded && user.skillsNeeded.length > 0) { %>
+        <ul>
+            <% user.skillsNeeded.forEach(skill => { %>
+                <li><%= skill %></li>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <p>You haven't added any skills you need yet.</p>
+    <% } %>
+
+    <form action="/users/profile/add-skill-needed" method="POST">
+        <input type="text" name="skill" placeholder="e.g., Public Speaking, React" required>
+        <button type="submit">Add Skill You Need</button>
+    </form>
+    <hr>
+
     <a href="/users/logout">Logout</a>
 </body>
 </html>

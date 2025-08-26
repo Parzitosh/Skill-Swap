@@ -108,6 +108,27 @@ const logoutUser = (req, res) => {
     });
 };
 
+const addSkillOffered = async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId);
+        user.skillsOffered.push(req.body.skill); // Add the new skill to the array
+        await user.save(); // Save the updated user document
+        res.redirect('/users/profile'); // Redirect back to the profile
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
+};
+
+const addSkillNeeded = async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId);
+        user.skillsNeeded.push(req.body.skill);
+        await user.save();
+        res.redirect('/users/profile');
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
+};
 
 module.exports = {
     showRegisterPage,
@@ -116,4 +137,6 @@ module.exports = {
     loginUser,
     showProfilePage,
     logoutUser,
+    addSkillOffered,
+    addSkillNeeded,
 };

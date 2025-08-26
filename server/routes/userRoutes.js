@@ -22,4 +22,8 @@ router.get('/profile', userController.showProfilePage);
 // Logout route
 router.get('/logout', userController.logoutUser);
 
+// Routes for adding skills
+router.post('/profile/add-skill-offered', userController.addSkillOffered);
+router.post('/profile/add-skill-needed', userController.addSkillNeeded);
+
 module.exports = router;
