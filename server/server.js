@@ -1,5 +1,13 @@
 const express = require('express');
 const path = require('path');
+const dotenv = require('dotenv');
+const connectDB = require('./config/db');
+
+require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
+console.log('My MONGO_URI is:', process.env.MONGO_URI);
+
+// Now, process.env.MONGO_URI will be available for this function
+connectDB();
 
 // Import the user routes
 const userRoutes = require('./routes/userRoutes');

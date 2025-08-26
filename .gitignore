@@ -1,0 +1,8 @@
+# Dependencies folder
+/server/node_modules
+
+# Environment variables file
+/server/.env
+
+# Logs
+npm-debug.log
