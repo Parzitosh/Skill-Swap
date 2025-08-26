@@ -45,19 +45,35 @@ const showLoginPage = (req, res) => {
     res.render('login');
 };
 
-const loginUser = (req, res) => {
+const loginUser = async (req, res) => {
     const { email, password } = req.body;
-    console.log('Login attempt with:', { email, password });
-    res.send('Login attempt received. We will validate this in the next step.');
+
+    try {
+        // 1. Find the user by email
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            // If no user is found with that email
+            return res.status(400).send('Invalid email or password.');
+        }
+
+        // 2. Compare the submitted password with the hashed password in the database 🔑
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            // If the passwords do not match
+            return res.status(400).send('Invalid email or password.');
+        }
+
+        // If login is successful
+        res.status(200).send('Login successful! Welcome back.');
+
+    } catch (error) {
+        console.error('Error during login:', error);
+        res.status(500).send('Server error during login.');
+    }
 };
 
-// Update module.exports to include the new functions
-module.exports = {
-    showRegisterPage,
-    registerUser,
-    showLoginPage,
-    loginUser,
-};
 
 module.exports = {
     showRegisterPage,
