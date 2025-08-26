@@ -8,7 +8,8 @@
     <nav>
         <a href="/users/dashboard">Dashboard</a> |
         <a href="/users/profile">My Profile</a> |
-        <a href="/users/logout">Logout</a>
+        <a href="/users/logout">Logout</a> |
+        <a href="/users/requests">My Requests</a> |
     </nav>
     <hr>
     <h1>User Dashboard</h1>
@@ -26,8 +27,11 @@
                     <strong>Needs:</strong> 
                     <%= user.skillsNeeded.join(', ') || 'None' %>
                 </p>
+                <form action="/users/request/<%= user._id %>" method="POST">
+                    <button type="submit">Send Swap Request</button>
+                </form>
             </div>
-        <% }) %>
+    <% }) %>
     <% } else { %>
         <p>No other users have registered yet.</p>
     <% } %>

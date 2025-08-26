@@ -2,6 +2,7 @@
 
 const User = require('../models/User');
 const bcrypt = require('bcryptjs'); // Import bcrypt
+const Request = require('../models/Request'); // Import the new Request model
 
 const showRegisterPage = (req, res) => {
     res.render('register', { title: 'Register' });
@@ -140,6 +141,46 @@ const showDashboard = async (req, res) => {
     }
 };
 
+const sendRequest = async (req, res) => {
+    try {
+        const newRequest = new Request({
+            fromUser: req.session.userId,
+            toUser: req.params.id, // The ID of the user we are sending the request to
+        });
+        await newRequest.save();
+        res.redirect('/users/dashboard');
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
+};
+
+const showRequestsPage = async (req, res) => {
+    try {
+        const receivedRequests = await Request.find({ toUser: req.session.userId }).populate('fromUser', 'name');
+        const sentRequests = await Request.find({ fromUser: req.session.userId }).populate('toUser', 'name');
+        res.render('requests', { title: 'My Requests', receivedRequests, sentRequests });
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
+};
+
+const acceptRequest = async (req, res) => {
+    try {
+        await Request.findOneAndUpdate({ _id: req.params.id, toUser: req.session.userId }, { status: 'accepted' });
+        res.redirect('/users/requests');
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
+};
+
+const rejectRequest = async (req, res) => {
+    try {
+        await Request.findOneAndUpdate({ _id: req.params.id, toUser: req.session.userId }, { status: 'rejected' });
+        res.redirect('/users/requests');
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
+};
 
 module.exports = {
     showRegisterPage,
@@ -151,4 +192,8 @@ module.exports = {
     addSkillOffered,
     addSkillNeeded,
     showDashboard,
+    sendRequest,
+    showRequestsPage,
+    acceptRequest,
+    rejectRequest,
 };

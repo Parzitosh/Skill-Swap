@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Requests - SkillSwap</title>
+</head>
+<body>
+    <nav>
+        <a href="/users/dashboard">Dashboard</a> |
+        <a href="/users/profile">My Profile</a> |
+        <a href="/users/requests">My Requests</a> |
+        <a href="/users/logout">Logout</a>
+    </nav>
+    <hr>
+    <h1>My Requests</h1>
+
+    <h2>Requests Received</h2>
+    <% if (receivedRequests && receivedRequests.length > 0) { %>
+        <ul>
+            <% receivedRequests.forEach(request => { %>
+                <li>
+                    From: <%= request.fromUser.name %> | Status: <%= request.status %>
+                    <% if (request.status === 'pending') { %>
+                        <form action="/users/requests/<%= request._id %>/accept" method="POST" style="display: inline;">
+                            <button type="submit">Accept</button>
+                        </form>
+                        <form action="/users/requests/<%= request._id %>/reject" method="POST" style="display: inline;">
+                            <button type="submit">Reject</button>
+                        </form>
+                    <% } %>
+                </li>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <p>You have not received any requests.</p>
+    <% } %>
+
+    <hr>
+    <h2>Requests Sent</h2>
+    <% if (sentRequests && sentRequests.length > 0) { %>
+        <ul>
+            <% sentRequests.forEach(request => { %>
+                <li>To: <%= request.toUser.name %> | Status: <%= request.status %></li>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <p>You have not sent any requests.</p>
+    <% } %>
+</body>
+</html>

@@ -27,4 +27,12 @@ router.post('/profile/add-skill-needed', protect, userController.addSkillNeeded)
 // Logout route
 router.get('/logout', userController.logoutUser);
 
+router.post('/request/:id', protect, userController.sendRequest);
+
+router.get('/requests', protect, userController.showRequestsPage);
+
+router.post('/requests/:id/accept', protect, userController.acceptRequest);
+
+router.post('/requests/:id/reject', protect, userController.rejectRequest);
+
 module.exports = router;
