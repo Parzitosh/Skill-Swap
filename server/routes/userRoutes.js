@@ -10,4 +10,10 @@ router.get('/register', userController.showRegisterPage);
 // This new route handles the form submission
 router.post('/register', userController.registerUser);
 
+// Show the login page
+router.get('/login', userController.showLoginPage);
+
+// Handle the login form submission
+router.post('/login', userController.loginUser);
+
 module.exports = router;

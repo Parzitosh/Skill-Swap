@@ -24,8 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 // Tell the app to use the userRoutes for any URL starting with '/users'
 app.use('/users', userRoutes);
 app.get('/', (req, res) => {
-    // This will automatically send the user to the registration page
-    res.redirect('/users/register');
+    res.redirect('/users/login');
 });
 
 app.listen(PORT, () => {
