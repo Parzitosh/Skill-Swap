@@ -28,6 +28,9 @@
                             <button type="submit">Reject</button>
                         </form>
                     <% } %>
+                    <% if (request.status === 'accepted') { %>
+                        <a href="/users/requests/<%= request._id %>/chat">Enter Chat</a>
+                    <% } %>
                 </li>
             <% }) %>
         </ul>
@@ -40,7 +43,12 @@
     <% if (sentRequests && sentRequests.length > 0) { %>
         <ul>
             <% sentRequests.forEach(request => { %>
-                <li>To: <%= request.toUser.name %> | Status: <%= request.status %></li>
+                <li>
+                    To: <%= request.toUser.name %> | Status: <%= request.status %>
+                    <% if (request.status === 'accepted') { %>
+                        <a href="/users/requests/<%= request._id %>/chat">Enter Chat</a>
+                    <% } %>
+                </li>
             <% }) %>
         </ul>
     <% } else { %>

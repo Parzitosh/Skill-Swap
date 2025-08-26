@@ -35,4 +35,6 @@ router.post('/requests/:id/accept', protect, userController.acceptRequest);
 
 router.post('/requests/:id/reject', protect, userController.rejectRequest);
 
+router.get('/requests/:id/chat', protect, userController.showChatPage);
+
 module.exports = router;

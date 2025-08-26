@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %> - SkillSwap</title>
+</head>
+<body>
+    <h1>Chat Room</h1>
+    <ul id="messages"></ul>
+    <form id="chat-form">
+        <input id="message-input" autocomplete="off" /><button>Send</button>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
+        const messages = document.getElementById('messages');
+        const room = '<%= requestId %>'; // Get the room ID from the server
+
+        // Join the specific chat room
+        socket.emit('joinRoom', { room });
+
+        // Listen for form submission
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (messageInput.value) {
+                // Send message to the server
+                socket.emit('chatMessage', { room, message: messageInput.value });
+                messageInput.value = '';
+            }
+        });
+
+        // Listen for incoming messages
+        socket.on('message', (msg) => {
+            const item = document.createElement('li');
+            item.textContent = msg;
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+    </script>
+</body>
+</html>

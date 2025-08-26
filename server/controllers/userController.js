@@ -182,6 +182,19 @@ const rejectRequest = async (req, res) => {
     }
 };
 
+const showChatPage = async (req, res) => {
+    try {
+        const request = await Request.findById(req.params.id);
+        // Security check: ensure the current user is part of this request
+        if (request.fromUser.toString() !== req.session.userId && request.toUser.toString() !== req.session.userId) {
+            return res.status(403).send('Not authorized');
+        }
+        res.render('chat', { title: 'Chat', requestId: request._id });
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
+};
+
 module.exports = {
     showRegisterPage,
     registerUser,
@@ -196,4 +209,5 @@ module.exports = {
     showRequestsPage,
     acceptRequest,
     rejectRequest,
+    showChatPage,
 };
