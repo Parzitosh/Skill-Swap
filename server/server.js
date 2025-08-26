@@ -12,6 +12,10 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Tell the app to use the userRoutes for any URL starting with '/users'
 app.use('/users', userRoutes);
+app.get('/', (req, res) => {
+    // This will automatically send the user to the registration page
+    res.redirect('/users/register');
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running successfully on http://localhost:${PORT}`);
