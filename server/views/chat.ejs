@@ -1,46 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title><%= title %> - SkillSwap</title>
-</head>
-<body>
-    <h1>Chat Room</h1>
+<%- include('partials/header', { title: 'Chat' }) %>
+
+<style>
+    #messages { 
+        list-style-type: none; 
+        margin: 0; 
+        padding: 0; 
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .message {
+        padding: 0.75rem 1rem;
+        border-radius: 1.25rem;
+        max-width: 70%;
+        word-wrap: break-word;
+    }
+    .sender {
+        align-self: flex-end;
+        background-color: #007bff; /* A nice blue for the sender */
+        color: white;
+        border-bottom-right-radius: 0.25rem;
+    }
+    .receiver {
+        align-self: flex-start;
+        background-color: #e9e9eb; /* A light grey for the receiver */
+        color: #000;
+        border-bottom-left-radius: 0.25rem;
+    }
+    .message-meta {
+        font-size: 0.75rem;
+        color: #65676b;
+        margin-top: 0.25rem;
+    }
+</style>
+
+<nav aria-label="breadcrumb">
+  <ul>
+    <li><a href="/users/dashboard">Dashboard</a></li>
+    <li><a href="/users/requests">My Requests</a></li>
+    <li>Chat Room</li>
+  </ul>
+</nav>
+
+<article>
+    <header><h1>Chat Room</h1></header>
     <ul id="messages">
         <% messages.forEach(message => { %>
-            <li><strong><%= message.sender.name %>:</strong> <%= message.text %> <em>at <%= new Date(message.createdAt).toLocaleTimeString() %></em></li>
+            <% const messageClass = message.sender._id.toString() === user._id.toString() ? 'sender' : 'receiver'; %>
+            <li class="message <%= messageClass %>">
+                <strong><%= message.sender.name %>:</strong> <%= message.text %>
+            </li>
         <% }) %>
     </ul>
-    <form id="chat-form">
-        <input id="message-input" autocomplete="off" /><button>Send</button>
-    </form>
+    <footer>
+        <form id="chat-form">
+            <input id="message-input" autocomplete="off" placeholder="Type a message...">
+            <button>Send</button>
+        </form>
+    </footer>
+</article>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-        const chatForm = document.getElementById('chat-form');
-        const messageInput = document.getElementById('message-input');
-        const messages = document.getElementById('messages');
-        const room = '<%= requestId %>';
-        const currentUser = { name: '<%= user.name %>' }; // Get current user's name
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
+    const messages = document.getElementById('messages');
+    const room = '<%= requestId %>';
+    const currentUserId = '<%= user._id %>'; // Get current user's ID
+    
+    socket.emit('joinRoom', { room });
 
-        socket.emit('joinRoom', { room });
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (messageInput.value) {
+            socket.emit('chatMessage', { room, message: messageInput.value });
+            messageInput.value = '';
+        }
+    });
 
-        chatForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (messageInput.value) {
-                socket.emit('chatMessage', { room, message: messageInput.value });
-                messageInput.value = '';
-            }
-        });
+    // Listen for incoming messages and apply conditional styling
+    socket.on('message', (msg) => {
+        const item = document.createElement('li');
+        // Check if the message sender is the current user
+        const messageClass = msg.sender._id.toString() === currentUserId ? 'sender' : 'receiver';
+        item.classList.add('message', messageClass);
+        
+        item.innerHTML = `<strong>${msg.sender.name}:</strong> ${msg.text}`;
+        
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
 
-        // Listen for incoming messages
-        socket.on('message', (msg) => {
-            const item = document.createElement('li');
-            item.innerHTML = `<strong>${msg.sender.name}:</strong> ${msg.text} <em>at ${msg.createdAt}</em>`;
-            messages.appendChild(item);
-            window.scrollTo(0, document.body.scrollHeight);
-        });
-    </script>
-</body>
-</html>
+    // Scroll to the bottom of the chat on page load
+    window.scrollTo(0, document.body.scrollHeight);
+</script>
+
+<%- include('partials/footer') %>

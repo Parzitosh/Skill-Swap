@@ -1,50 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Your Profile - SkillSwap</title>
-</head>
-<body>
-    <h1>Welcome, <%= user.name %>!</h1>
-    <p>Your email is: <%= user.email %></p>
-    <hr>
+<%- include('partials/header', { title: 'My Profile' }) %>
 
-    <h2>Skills I Can Offer:</h2>
-    <% if (user.skillsOffered && user.skillsOffered.length > 0) { %>
-        <ul>
-            <% user.skillsOffered.forEach(skill => { %>
-                <li><%= skill %></li>
-            <% }) %>
-        </ul>
-    <% } else { %>
-        <p>You haven't added any skills to offer yet.</p>
-    <% } %>
+<nav>
+    <ul>
+        <li><strong>SkillSwap</strong></li>
+    </ul>
+    <ul>
+        <li><a href="/users/dashboard" class="secondary">Dashboard</a></li>
+        <li><a href="/users/profile" class="secondary">My Profile</a></li>
+        <li><a href="/users/requests" class="secondary">My Requests</a></li>
+        <li><a href="/users/logout" role="button">Logout</a></li>
+    </ul>
+</nav>
 
-    <form action="/users/profile/add-skill-offered" method="POST">
-        <input type="text" name="skill" placeholder="e.g., Python, Graphic Design" required>
-        <button type="submit">Add Skill to Offer</button>
-    </form>
-    <hr>
+<h1>Welcome, <%= user.name %>!</h1>
+<p>Your email is: <%= user.email %></p>
+<hr>
 
-    <h2>Skills I Need:</h2>
-    <% if (user.skillsNeeded && user.skillsNeeded.length > 0) { %>
-        <ul>
-            <% user.skillsNeeded.forEach(skill => { %>
-                <li><%= skill %></li>
-            <% }) %>
-        </ul>
-    <% } else { %>
-        <p>You haven't added any skills you need yet.</p>
-    <% } %>
+<div class="grid">
+    <article>
+        <h2>Skills I Can Offer:</h2>
+        <% if (user.skillsOffered && user.skillsOffered.length > 0) { %>
+            <ul>
+                <% user.skillsOffered.forEach(skill => { %>
+                    <li><%= skill %></li>
+                <% }) %>
+            </ul>
+        <% } else { %>
+            <p>You haven't added any skills to offer yet.</p>
+        <% } %>
+        <form action="/users/profile/add-skill-offered" method="POST">
+            <input type="text" name="skill" placeholder="e.g., Python" required>
+            <button type="submit">Add Skill to Offer</button>
+        </form>
+    </article>
+    <article>
+        <h2>Skills I Need:</h2>
+        <% if (user.skillsNeeded && user.skillsNeeded.length > 0) { %>
+            <ul>
+                <% user.skillsNeeded.forEach(skill => { %>
+                    <li><%= skill %></li>
+                <% }) %>
+            </ul>
+        <% } else { %>
+            <p>You haven't added any skills you need yet.</p>
+        <% } %>
+        <form action="/users/profile/add-skill-needed" method="POST">
+            <input type="text" name="skill" placeholder="e.g., React" required>
+            <button type="submit">Add Skill You Need</button>
+        </form>
+    </article>
+</div>
 
-    <form action="/users/profile/add-skill-needed" method="POST">
-        <input type="text" name="skill" placeholder="e.g., Public Speaking, React" required>
-        <button type="submit">Add Skill You Need</button>
-    </form>
-    <hr>
-
-    <a href="/users/requests">My Requests</a> |
-
-    <a href="/users/logout">Logout</a>
-</body>
-</html>
+<%- include('partials/footer') %>

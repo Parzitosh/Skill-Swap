@@ -1,39 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title><%= title %> - SkillSwap</title>
-</head>
-<body>
-    <nav>
-        <a href="/users/dashboard">Dashboard</a> |
-        <a href="/users/profile">My Profile</a> |
-        <a href="/users/logout">Logout</a> |
-        <a href="/users/requests">My Requests</a> |
-    </nav>
-    <hr>
-    <h1>User Dashboard</h1>
-    <p>Find other users to swap skills with!</p>
+<%- include('partials/header', { title: 'Dashboard' }) %>
 
-    <% if (users && users.length > 0) { %>
-        <% users.forEach(user => { %>
-            <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-                <h3><%= user.name %></h3>
-                <p>
-                    <strong>Offers:</strong> 
-                    <%= user.skillsOffered.join(', ') || 'None' %>
-                </p>
-                <p>
-                    <strong>Needs:</strong> 
-                    <%= user.skillsNeeded.join(', ') || 'None' %>
-                </p>
+<nav>
+    <ul>
+        <li><strong>SkillSwap</strong></li>
+    </ul>
+    <ul>
+        <li><a href="/users/dashboard" class="secondary">Dashboard</a></li>
+        <li><a href="/users/profile" class="secondary">My Profile</a></li>
+        <li><a href="/users/requests" class="secondary">My Requests</a></li>
+        <li><a href="/users/logout" role="button">Logout</a></li>
+    </ul>
+</nav>
+
+<h1>User Dashboard</h1>
+<p>Find other users to swap skills with!</p>
+
+<% if (users && users.length > 0) { %>
+    <% users.forEach(user => { %>
+        <article>
+            <header>
+                <strong><%= user.name %></strong>
+            </header>
+            <p>
+                <strong>Offers:</strong> 
+                <%= user.skillsOffered.join(', ') || 'None' %>
+            </p>
+            <p>
+                <strong>Needs:</strong> 
+                <%= user.skillsNeeded.join(', ') || 'None' %>
+            </p>
+            <footer>
                 <form action="/users/request/<%= user._id %>" method="POST">
                     <button type="submit">Send Swap Request</button>
                 </form>
-            </div>
+            </footer>
+        </article>
     <% }) %>
-    <% } else { %>
-        <p>No other users have registered yet.</p>
-    <% } %>
-</body>
-</html>
+<% } else { %>
+    <p>No other users have registered yet.</p>
+<% } %>
+
+<%- include('partials/footer') %>

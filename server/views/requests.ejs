@@ -1,35 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My Requests - SkillSwap</title>
-</head>
-<body>
-    <nav>
-        <a href="/users/dashboard">Dashboard</a> |
-        <a href="/users/profile">My Profile</a> |
-        <a href="/users/requests">My Requests</a> |
-        <a href="/users/logout">Logout</a>
-    </nav>
-    <hr>
-    <h1>My Requests</h1>
+<%- include('partials/header', { title: 'My Requests' }) %>
 
-    <h2>Requests Received</h2>
+<nav>
+    <ul>
+        <li><strong>SkillSwap</strong></li>
+    </ul>
+    <ul>
+        <li><a href="/users/dashboard" class="secondary">Dashboard</a></li>
+        <li><a href="/users/profile" class="secondary">My Profile</a></li>
+        <li><a href="/users/requests" class="secondary">My Requests</a></li>
+        <li><a href="/users/logout" role="button">Logout</a></li>
+    </ul>
+</nav>
+
+<h1>My Requests</h1>
+
+<article>
+    <header><h2>Requests Received</h2></header>
     <% if (receivedRequests && receivedRequests.length > 0) { %>
         <ul>
             <% receivedRequests.forEach(request => { %>
                 <li>
-                    From: <%= request.fromUser.name %> | Status: <%= request.status %>
+                    From: <strong><%= request.fromUser.name %></strong> | Status: <%= request.status %>
                     <% if (request.status === 'pending') { %>
                         <form action="/users/requests/<%= request._id %>/accept" method="POST" style="display: inline;">
-                            <button type="submit">Accept</button>
+                            <button type="submit" class="secondary">Accept</button>
                         </form>
                         <form action="/users/requests/<%= request._id %>/reject" method="POST" style="display: inline;">
-                            <button type="submit">Reject</button>
+                            <button type="submit" class="contrast">Reject</button>
                         </form>
                     <% } %>
                     <% if (request.status === 'accepted') { %>
-                        <a href="/users/requests/<%= request._id %>/chat">Enter Chat</a>
+                        <a href="/users/requests/<%= request._id %>/chat" role="button" class="outline">Enter Chat</a>
                     <% } %>
                 </li>
             <% }) %>
@@ -37,16 +38,17 @@
     <% } else { %>
         <p>You have not received any requests.</p>
     <% } %>
+</article>
 
-    <hr>
-    <h2>Requests Sent</h2>
+<article>
+    <header><h2>Requests Sent</h2></header>
     <% if (sentRequests && sentRequests.length > 0) { %>
         <ul>
             <% sentRequests.forEach(request => { %>
                 <li>
-                    To: <%= request.toUser.name %> | Status: <%= request.status %>
+                    To: <strong><%= request.toUser.name %></strong> | Status: <%= request.status %>
                     <% if (request.status === 'accepted') { %>
-                        <a href="/users/requests/<%= request._id %>/chat">Enter Chat</a>
+                        <a href="/users/requests/<%= request._id %>/chat" role="button" class="outline">Enter Chat</a>
                     <% } %>
                 </li>
             <% }) %>
@@ -54,5 +56,6 @@
     <% } else { %>
         <p>You have not sent any requests.</p>
     <% } %>
-</body>
-</html>
+</article>
+
+<%- include('partials/footer') %>

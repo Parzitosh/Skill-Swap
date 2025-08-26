@@ -44,7 +44,7 @@ const registerUser = async (req, res) => {
 };
 
 const showLoginPage = (req, res) => {
-    res.render('login');
+    res.render('login', { title: 'Login' })
 };
 
 const loginUser = async (req, res) => {
@@ -93,7 +93,7 @@ const showProfilePage = async (req, res) => {
         console.log('User data being sent to profile page:', user);
 
         // Render the profile page and pass the user object to it
-        res.render('profile', { user: user });
+        res.render('profile', { title: 'My Profile', user: user });
 
     } catch (error) {
         console.error("Error fetching user for profile:", error);
