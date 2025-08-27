@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose; 
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -38,6 +39,10 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    wishlist: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    }],
 }, {
     timestamps: true,
 });

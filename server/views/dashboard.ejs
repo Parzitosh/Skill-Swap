@@ -9,6 +9,7 @@
         <li><a href="/users/profile" class="secondary">My Profile</a></li>
         <li><a href="/users/requests" class="secondary">My Requests</a></li>
         <li><a href="/users/logout" role="button">Logout</a></li>
+        <li><a href="/users/wishlist" class="secondary">My Wishlist</a></li>
     </ul>
 </nav>
 
@@ -30,23 +31,48 @@
                 <strong><a href="/users/view/<%= user._id %>"><%= user.name %></a></strong>
                 <small>⭐ <%= user.averageRating %> (<%= user.reviewCount %> reviews)</small>
             </header>
-            <p>
-                <strong>Offers:</strong> 
-                <%= user.skillsOffered.join(', ') || 'None' %>
-            </p>
-            <p>
-                <strong>Needs:</strong> 
-                <%= user.skillsNeeded.join(', ') || 'None' %>
-            </p>
+            <p><strong>Offers:</strong> <%= user.skillsOffered.join(', ') || 'None' %></p>
+            <p><strong>Needs:</strong> <%= user.skillsNeeded.join(', ') || 'None' %></p>
             <footer>
-                <form action="/users/request/<%= user._id %>" method="POST">
-                    <button type="submit">Send Swap Request</button>
-                </form>
+                <div class="grid">
+                    <form action="/users/request/<%= user._id %>" method="POST">
+                        <button type="submit">Send Swap Request</button>
+                    </form>
+                    <!-- The bookmark form is now just a button -->
+                    <button 
+                        class="bookmark-btn <%= currentUser.wishlist.includes(user._id.toString()) ? 'secondary' : 'outline' %>" 
+                        data-userid="<%= user._id %>">
+                        <%= currentUser.wishlist.includes(user._id.toString()) ? 'Unbookmark' : 'Bookmark' %>
+                    </button>
+                </div>
             </footer>
         </article>
     <% }) %>
 <% } else { %>
     <p>No other users have registered yet.</p>
 <% } %>
+<script>
+    document.querySelectorAll('.bookmark-btn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            const userId = e.target.dataset.userid;
+            const response = await fetch(`/users/wishlist/toggle/${userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
 
+            if (data.success) {
+                if (data.isBookmarked) {
+                    e.target.textContent = 'Unbookmark';
+                    e.target.classList.remove('outline');
+                    e.target.classList.add('secondary');
+                } else {
+                    e.target.textContent = 'Bookmark';
+                    e.target.classList.remove('secondary');
+                    e.target.classList.add('outline');
+                }
+            }
+        });
+    });
+</script>
 <%- include('partials/footer') %>

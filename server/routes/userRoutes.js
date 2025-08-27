@@ -46,4 +46,9 @@ router.post('/review/:revieweeId/:requestId', protect, userController.submitRevi
 // Route for viewing a public user profile
 router.get('/view/:id', protect, userController.showPublicProfile);
 
+// Route for adding/removing from wishlist
+router.post('/wishlist/toggle/:id', protect, userController.toggleWishlist);
+
+router.get('/wishlist', protect, userController.showWishlist);
+
 module.exports = router;

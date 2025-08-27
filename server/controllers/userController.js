@@ -146,13 +146,18 @@ const showDashboard = async (req, res) => {
             query.skillsOffered = { $regex: req.query.search, $options: "i" };
         }
 
-        // Execute the query (either the base one or the filtered one)
+        // Execute the query to find all users to display
         const users = await User.find(query);
         
+        // Fetch the data for the currently logged-in user
+        const currentUser = await User.findById(req.session.userId);
+
+        // Render the dashboard and pass all necessary data to the view
         res.render('dashboard', { 
             title: 'Dashboard', 
             users: users,
-            searchQuery: req.query.search || '' // Pass the search query back to the view
+            searchQuery: req.query.search || '',
+            currentUser: currentUser // Pass the current user's data
         });
     } catch (error) {
         res.status(500).send('Server Error');
@@ -280,6 +285,41 @@ const showPublicProfile = async (req, res) => {
     }
 };
 
+const toggleWishlist = async (req, res) => {
+    try {
+        const currentUser = await User.findById(req.session.userId);
+        const userToBookmarkId = req.params.id;
+        let isBookmarked;
+
+        const index = currentUser.wishlist.indexOf(userToBookmarkId);
+
+        if (index > -1) {
+            currentUser.wishlist.splice(index, 1);
+            isBookmarked = false; // The user was just unbookmarked
+        } else {
+            currentUser.wishlist.push(userToBookmarkId);
+            isBookmarked = true; // The user was just bookmarked
+        }
+
+        await currentUser.save();
+        
+        // Send back a JSON response instead of redirecting
+        res.json({ success: true, isBookmarked: isBookmarked });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
+
+const showWishlist = async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId).populate('wishlist');
+        res.render('wishlist', { title: 'My Wishlist', wishlist: user.wishlist });
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
+};
+
 module.exports = {
     showRegisterPage,
     registerUser,
@@ -298,4 +338,6 @@ module.exports = {
     updateProfile,
     submitReview,
     showPublicProfile,
+    toggleWishlist,
+    showWishlist,
 };

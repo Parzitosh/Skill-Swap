@@ -1,0 +1,50 @@
+<%- include('partials/header', { title: 'My Wishlist' }) %>
+
+<nav>
+    <!-- ... (your existing nav, add a link to /users/wishlist) ... -->
+</nav>
+
+<h1>My Wishlist</h1>
+<p>Your saved profiles for future skill swaps.</p>
+
+<% if (wishlist && wishlist.length > 0) { %>
+    <% wishlist.forEach(user => { %>
+        <article>
+            <header>
+                <strong><a href="/users/view/<%= user._id %>"><%= user.name %></a></strong>
+                <small>⭐ <%= user.averageRating %> (<%= user.reviewCount %> reviews)</small>
+            </header>
+            <p><strong>Offers:</strong> <%= user.skillsOffered.join(', ') || 'None' %></p>
+            <p><strong>Needs:</strong> <%= user.skillsNeeded.join(', ') || 'None' %></p>
+            <footer>
+                <div class="grid">
+                    <form action="/users/request/<%= user._id %>" method="POST">
+                        <button type="submit">Send Swap Request</button>
+                    </form>
+                    <!-- The unbookmark form is now just a button -->
+                    <button class="unbookmark-btn secondary" data-userid="<%= user._id %>">Unbookmark</button>
+                </div>
+            </footer>
+        </article>
+    <% }) %>
+<% } else { %>
+    <p>You haven't bookmarked any users yet.</p>
+<% } %>
+<script>
+    document.querySelectorAll('.unbookmark-btn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            const userId = e.target.dataset.userid;
+            const response = await fetch(`/users/wishlist/toggle/${userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+
+            if (data.success && !data.isBookmarked) {
+                // Remove the entire article from the page
+                e.target.closest('article').remove();
+            }
+        });
+    });
+</script>
+<%- include('partials/footer') %>
