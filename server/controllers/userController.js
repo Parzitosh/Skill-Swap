@@ -134,9 +134,25 @@ const addSkillNeeded = async (req, res) => {
 
 const showDashboard = async (req, res) => {
     try {
-        // Find all users EXCEPT the currently logged-in user
-        const users = await User.find({ _id: { $ne: req.session.userId } });
-        res.render('dashboard', { title: 'Dashboard', users: users });
+        // The base query to find all users except the current one
+        const query = { _id: { $ne: req.session.userId } };
+
+        // Check if there is a search term in the URL (e.g., /dashboard?search=Python)
+        if (req.query.search) {
+            // If there is a search term, add a condition to our query.
+            // This will search for users where the 'skillsOffered' array contains the search term.
+            // The '$regex' and '$options: "i"' make the search case-insensitive.
+            query.skillsOffered = { $regex: req.query.search, $options: "i" };
+        }
+
+        // Execute the query (either the base one or the filtered one)
+        const users = await User.find(query);
+        
+        res.render('dashboard', { 
+            title: 'Dashboard', 
+            users: users,
+            searchQuery: req.query.search || '' // Pass the search query back to the view
+        });
     } catch (error) {
         res.status(500).send('Server Error');
     }

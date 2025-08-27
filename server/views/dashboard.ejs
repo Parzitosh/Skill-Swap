@@ -15,6 +15,14 @@
 <h1>User Dashboard</h1>
 <p>Find other users to swap skills with!</p>
 
+<form action="/users/dashboard" method="GET">
+    <div class="grid">
+        <input type="search" id="search" name="search" placeholder="Search by skill (e.g., Python)" value="<%= searchQuery %>">
+        <button type="submit">Search</button>
+    </div>
+</form>
+<hr>
+
 <% if (users && users.length > 0) { %>
     <% users.forEach(user => { %>
         <article>
