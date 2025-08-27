@@ -200,6 +200,16 @@ const showChatPage = async (req, res) => {
     }
 };
 
+const updateProfile = async (req, res) => {
+    try {
+        const { location, bio } = req.body;
+        await User.findByIdAndUpdate(req.session.userId, { location, bio });
+        res.redirect('/users/profile');
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
+};
+
 module.exports = {
     showRegisterPage,
     registerUser,
@@ -215,4 +225,5 @@ module.exports = {
     acceptRequest,
     rejectRequest,
     showChatPage,
+    updateProfile,
 };

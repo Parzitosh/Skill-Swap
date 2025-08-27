@@ -37,4 +37,7 @@ router.post('/requests/:id/reject', protect, userController.rejectRequest);
 
 router.get('/requests/:id/chat', protect, userController.showChatPage);
 
+// Route for updating profile details
+router.post('/profile/update', protect, userController.updateProfile);
+
 module.exports = router;

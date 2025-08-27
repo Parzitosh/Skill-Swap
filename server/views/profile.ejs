@@ -13,9 +13,30 @@
 </nav>
 
 <h1>Welcome, <%= user.name %>!</h1>
-<p>Your email is: <%= user.email %></p>
+
+<!-- Profile Details Section -->
+<article>
+    <header><strong>My Details</strong></header>
+    <p><strong>Email:</strong> <%= user.email %></p>
+    <p><strong>Location:</strong> <%= user.location || 'Not set' %></p>
+    <p><strong>Bio:</strong> <%= user.bio || 'Not set' %></p>
+    
+    <details>
+        <summary>Edit Profile Details</summary>
+        <form action="/users/profile/update" method="POST">
+            <label for="location">Location</label>
+            <input type="text" id="location" name="location" value="<%= user.location %>" placeholder="e.g., San Francisco, CA">
+            
+            <label for="bio">Bio</label>
+            <textarea id="bio" name="bio" placeholder="Tell us a little about yourself..."><%= user.bio %></textarea>
+            
+            <button type="submit">Save Changes</button>
+        </form>
+    </details>
+</article>
 <hr>
 
+<!-- Skills Management Section -->
 <div class="grid">
     <article>
         <h2>Skills I Can Offer:</h2>
