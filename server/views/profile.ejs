@@ -16,7 +16,10 @@
 
 <!-- Profile Details Section -->
 <article>
-    <header><strong>My Details</strong></header>
+    <header>
+        <strong>My Details</strong>
+        <small>My Rating: ⭐ <%= user.averageRating %> (<%= user.reviewCount %> reviews)</small>
+    </header>
     <p><strong>Email:</strong> <%= user.email %></p>
     <p><strong>Location:</strong> <%= user.location || 'Not set' %></p>
     <p><strong>Bio:</strong> <%= user.bio || 'Not set' %></p>

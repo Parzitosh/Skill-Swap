@@ -27,11 +27,9 @@
     <% users.forEach(user => { %>
         <article>
             <header>
-                <strong><%= user.name %></strong>
-                <!-- Display the rating -->
+                <strong><a href="/users/view/<%= user._id %>"><%= user.name %></a></strong>
                 <small>⭐ <%= user.averageRating %> (<%= user.reviewCount %> reviews)</small>
             </header>
-            <!-- The second <header> was removed from here -->
             <p>
                 <strong>Offers:</strong> 
                 <%= user.skillsOffered.join(', ') || 'None' %>

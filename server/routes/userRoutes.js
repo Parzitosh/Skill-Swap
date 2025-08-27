@@ -43,4 +43,7 @@ router.post('/profile/update', protect, userController.updateProfile);
 // Route for submitting a review
 router.post('/review/:revieweeId/:requestId', protect, userController.submitReview);
 
+// Route for viewing a public user profile
+router.get('/view/:id', protect, userController.showPublicProfile);
+
 module.exports = router;

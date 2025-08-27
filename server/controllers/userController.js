@@ -261,6 +261,25 @@ const submitReview = async (req, res) => {
     }
 };
 
+const showPublicProfile = async (req, res) => {
+    try {
+        // Find the user whose profile is being viewed
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // Find all reviews for that user and populate the reviewer's name
+        const reviews = await Review.find({ reviewee: user._id })
+            .sort({ createdAt: -1 }) // Show newest reviews first
+            .populate('reviewer', 'name'); // Get the name of the person who wrote the review
+
+        res.render('public-profile', { title: `${user.name}'s Profile`, profileUser: user, reviews: reviews });
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
+};
+
 module.exports = {
     showRegisterPage,
     registerUser,
@@ -278,4 +297,5 @@ module.exports = {
     showChatPage,
     updateProfile,
     submitReview,
+    showPublicProfile,
 };

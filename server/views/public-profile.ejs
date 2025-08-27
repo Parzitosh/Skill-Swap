@@ -1,0 +1,52 @@
+<%- include('partials/header', { title: title }) %>
+
+<nav>
+    <!-- ... (your existing nav) ... -->
+</nav>
+
+<article>
+    <header>
+        <h1><%= profileUser.name %></h1>
+        <p>⭐ <strong><%= profileUser.averageRating %></strong> (<%= profileUser.reviewCount %> reviews)</p>
+    </header>
+    <p><strong>Location:</strong> <%= profileUser.location || 'Not set' %></p>
+    <p><strong>Bio:</strong> <%= profileUser.bio || 'Not set' %></p>
+    <hr>
+    <div class="grid">
+        <div>
+            <strong>Skills Offered:</strong>
+            <ul>
+                <% profileUser.skillsOffered.forEach(skill => { %>
+                    <li><%= skill %></li>
+                <% }) %>
+            </ul>
+        </div>
+        <div>
+            <strong>Skills Needed:</strong>
+            <ul>
+                <% profileUser.skillsNeeded.forEach(skill => { %>
+                    <li><%= skill %></li>
+                <% }) %>
+            </ul>
+        </div>
+    </div>
+</article>
+
+<article>
+    <header><h2>Reviews</h2></header>
+    <% if (reviews && reviews.length > 0) { %>
+        <% reviews.forEach(review => { %>
+            <article>
+                <header>
+                    <strong><%= review.reviewer.name %></strong> rated it <strong><%= review.rating %> out of 5</strong>
+                </header>
+                <p><%= review.comment %></p>
+                <footer><small>Posted on <%= new Date(review.createdAt).toLocaleDateString() %></small></footer>
+            </article>
+        <% }) %>
+    <% } else { %>
+        <p>This user has not received any reviews yet.</p>
+    <% } %>
+</article>
+
+<%- include('partials/footer') %>
