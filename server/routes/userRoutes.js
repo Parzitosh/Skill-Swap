@@ -40,4 +40,7 @@ router.get('/requests/:id/chat', protect, userController.showChatPage);
 // Route for updating profile details
 router.post('/profile/update', protect, userController.updateProfile);
 
+// Route for submitting a review
+router.post('/review/:revieweeId/:requestId', protect, userController.submitReview);
+
 module.exports = router;

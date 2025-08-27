@@ -31,6 +31,17 @@
                     <% } %>
                     <% if (request.status === 'accepted') { %>
                         <a href="/users/requests/<%= request._id %>/chat" role="button" class="outline">Enter Chat</a>
+                        <details>
+                            <summary role="button" class="secondary outline">Leave a Review</summary>
+                            <%# In received requests, the person to review is always the 'fromUser' %>
+                            <form action="/users/review/<%= request.fromUser._id %>/<%= request._id %>" method="POST">
+                                <label for="rating">Rating (1-5)</label>
+                                <input type="number" name="rating" min="1" max="5" required>
+                                <label for="comment">Comment</label>
+                                <textarea name="comment" required></textarea>
+                                <button type="submit">Submit Review</button>
+                            </form>
+                        </details>
                     <% } %>
                 </li>
             <% }) %>
@@ -49,6 +60,17 @@
                     To: <strong><%= request.toUser.name %></strong> | Status: <%= request.status %>
                     <% if (request.status === 'accepted') { %>
                         <a href="/users/requests/<%= request._id %>/chat" role="button" class="outline">Enter Chat</a>
+                        <details>
+                            <summary role="button" class="secondary outline">Leave a Review</summary>
+                            <%# In sent requests, the person to review is always the 'toUser' %>
+                            <form action="/users/review/<%= request.toUser._id %>/<%= request._id %>" method="POST">
+                                <label for="rating">Rating (1-5)</label>
+                                <input type="number" name="rating" min="1" max="5" required>
+                                <label for="comment">Comment</label>
+                                <textarea name="comment" required></textarea>
+                                <button type="submit">Submit Review</button>
+                            </form>
+                        </details>
                     <% } %>
                 </li>
             <% }) %>

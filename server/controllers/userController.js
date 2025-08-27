@@ -4,6 +4,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs'); // Import bcrypt
 const Request = require('../models/Request'); // Import the new Request model
 const Message = require('../models/Message');
+const Review = require('../models/Review');
 
 const showRegisterPage = (req, res) => {
     res.render('register', { title: 'Register' });
@@ -226,6 +227,40 @@ const updateProfile = async (req, res) => {
     }
 };
 
+const submitReview = async (req, res) => {
+    const { rating, comment } = req.body;
+    const { revieweeId, requestId } = req.params;
+    const reviewerId = req.session.userId;
+
+    try {
+        // Create and save the new review
+        const newReview = new Review({
+            reviewee: revieweeId,
+            reviewer: reviewerId,
+            request: requestId,
+            rating: Number(rating),
+            comment,
+        });
+        await newReview.save();
+
+        // --- Calculate and update the user's average rating ---
+        const reviews = await Review.find({ reviewee: revieweeId });
+        const totalRating = reviews.reduce((acc, item) => item.rating + acc, 0);
+        const averageRating = totalRating / reviews.length;
+
+        await User.findByIdAndUpdate(revieweeId, {
+            averageRating: averageRating.toFixed(1), // Round to one decimal place
+            reviewCount: reviews.length,
+        });
+        // --- End of calculation ---
+
+        res.redirect('/users/requests');
+    } catch (error) {
+        console.error("Error submitting review:", error);
+        res.status(500).send('Server Error');
+    }
+};
+
 module.exports = {
     showRegisterPage,
     registerUser,
@@ -242,4 +277,5 @@ module.exports = {
     rejectRequest,
     showChatPage,
     updateProfile,
+    submitReview,
 };

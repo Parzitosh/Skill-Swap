@@ -30,8 +30,16 @@ const userSchema = new mongoose.Schema({
         type: [String],
         default: [],
     },
+    averageRating: {
+        type: Number,
+        default: 0,
+    },
+    reviewCount: {
+        type: Number,
+        default: 0,
+    },
 }, {
-    timestamps: true, // Automatically adds createdAt and updatedAt fields
+    timestamps: true,
 });
 
 const User = mongoose.model('User', userSchema);
