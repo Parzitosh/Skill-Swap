@@ -1,10 +1,9 @@
-// server/controllers/userController.js
-
 const User = require('../models/User');
-const bcrypt = require('bcryptjs'); // Import bcrypt
-const Request = require('../models/Request'); // Import the new Request model
+const bcrypt = require('bcryptjs'); 
+const Request = require('../models/Request');
 const Message = require('../models/Message');
 const Review = require('../models/Review');
+const Notification = require('../models/Notification');
 
 const showRegisterPage = (req, res) => {
     res.render('register', { title: 'Register' });
@@ -175,9 +174,18 @@ const sendRequest = async (req, res) => {
     try {
         const newRequest = new Request({
             fromUser: req.session.userId,
-            toUser: req.params.id, // The ID of the user we are sending the request to
+            toUser: req.params.id,
         });
         await newRequest.save();
+
+        // Create a notification for the recipient
+        const notification = new Notification({
+            recipient: req.params.id,
+            sender: req.session.userId,
+            type: 'new_request',
+        });
+        await notification.save();
+
         res.redirect('/users/dashboard');
     } catch (error) {
         res.status(500).send('Server Error');
@@ -186,28 +194,58 @@ const sendRequest = async (req, res) => {
 
 const showRequestsPage = async (req, res) => {
     try {
+        // Mark all unread notifications for this user as read
+        await Notification.updateMany(
+            { recipient: req.session.userId, isRead: false },
+            { isRead: true }
+        );
+
         const receivedRequests = await Request.find({ toUser: req.session.userId }).populate('fromUser', 'name');
         const sentRequests = await Request.find({ fromUser: req.session.userId }).populate('toUser', 'name');
         res.render('requests', { title: 'My Requests', receivedRequests, sentRequests });
-    } catch (error) {
+    } catch (error){
         res.status(500).send('Server Error');
     }
 };
 
 const acceptRequest = async (req, res) => {
     try {
-        await Request.findOneAndUpdate({ _id: req.params.id, toUser: req.session.userId }, { status: 'accepted' });
+        const request = await Request.findOneAndUpdate(
+            { _id: req.params.id, toUser: req.session.userId }, 
+            { status: 'accepted' }
+        );
+
+        // Create a notification for the original sender
+        const notification = new Notification({
+            recipient: request.fromUser,
+            sender: req.session.userId,
+            type: 'request_accepted',
+        });
+        await notification.save();
+
         res.redirect('/users/requests');
-    } catch (error) {
+    } catch (error){
         res.status(500).send('Server Error');
-    }
+    } 
 };
 
 const rejectRequest = async (req, res) => {
     try {
-        await Request.findOneAndUpdate({ _id: req.params.id, toUser: req.session.userId }, { status: 'rejected' });
+        const request = await Request.findOneAndUpdate(
+            { _id: req.params.id, toUser: req.session.userId },
+            { status: 'rejected' }
+        );
+
+        // Create a notification for the original sender
+        const notification = new Notification({
+            recipient: request.fromUser,
+            sender: req.session.userId,
+            type: 'request_rejected',
+        });
+        await notification.save();
+
         res.redirect('/users/requests');
-    } catch (error) {
+    } catch (error){
         res.status(500).send('Server Error');
     }
 };

@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 const session = require('express-session');
 const http = require('http'); // Import http
 const { Server } = require('socket.io'); // Import Server from socket.io
+const { fetchNotifications } = require('./middleware/authMiddleware');
 
 // Load environment variables and connect to DB
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
@@ -33,6 +34,8 @@ const sessionMiddleware = session({
     cookie: { maxAge: 1000 * 60 * 60 },
 });
 app.use(sessionMiddleware);
+app.use(fetchNotifications);
+
 io.use((socket, next) => {
     sessionMiddleware(socket.request, {}, next);
 });
