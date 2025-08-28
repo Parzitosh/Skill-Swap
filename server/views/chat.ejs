@@ -1,37 +1,11 @@
 <%- include('partials/header', { title: 'Chat' }) %>
 
 <style>
-    #messages { 
-        list-style-type: none; 
-        margin: 0; 
-        padding: 0; 
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    .message {
-        padding: 0.75rem 1rem;
-        border-radius: 1.25rem;
-        max-width: 70%;
-        word-wrap: break-word;
-    }
-    .sender {
-        align-self: flex-end;
-        background-color: #007bff; /* A nice blue for the sender */
-        color: white;
-        border-bottom-right-radius: 0.25rem;
-    }
-    .receiver {
-        align-self: flex-start;
-        background-color: #e9e9eb; /* A light grey for the receiver */
-        color: #000;
-        border-bottom-left-radius: 0.25rem;
-    }
-    .message-meta {
-        font-size: 0.75rem;
-        color: #65676b;
-        margin-top: 0.25rem;
-    }
+    /* ... (your existing styles are fine) ... */
+    #messages { list-style-type: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+    .message { padding: 0.75rem 1rem; border-radius: 1.25rem; max-width: 70%; word-wrap: break-word; }
+    .sender { align-self: flex-end; background-color: #007bff; color: white; border-bottom-right-radius: 0.25rem; }
+    .receiver { align-self: flex-start; background-color: #e9e9eb; color: #000; border-bottom-left-radius: 0.25rem; }
 </style>
 
 <nav aria-label="breadcrumb">
@@ -45,6 +19,7 @@
 <article>
     <header><h1>Chat Room</h1></header>
     <ul id="messages">
+        <!-- Chat history rendering -->
         <% messages.forEach(message => { %>
             <% const messageClass = message.sender._id.toString() === user._id.toString() ? 'sender' : 'receiver'; %>
             <li class="message <%= messageClass %>">
@@ -67,7 +42,7 @@
     const messageInput = document.getElementById('message-input');
     const messages = document.getElementById('messages');
     const room = '<%= requestId %>';
-    const currentUserId = '<%= user._id %>'; // Get current user's ID
+    const currentUserId = '<%= user._id %>';
     
     socket.emit('joinRoom', { room });
 
@@ -79,9 +54,16 @@
         }
     });
 
-    // Listen for incoming messages and apply conditional styling
+    // --- THIS IS THE CORRECTED PART ---
     socket.on('message', (msg) => {
+        // Defensive check: Make sure msg and msg.sender exist before proceeding
+        if (!msg || !msg.sender || !msg.sender._id) {
+            console.error('Received malformed message object:', msg);
+            return; // Stop execution if the message isn't right
+        }
+
         const item = document.createElement('li');
+        
         // Check if the message sender is the current user
         const messageClass = msg.sender._id.toString() === currentUserId ? 'sender' : 'receiver';
         item.classList.add('message', messageClass);
@@ -92,7 +74,7 @@
         window.scrollTo(0, document.body.scrollHeight);
     });
 
-    // Scroll to the bottom of the chat on page load
+    // Scroll to the bottom on page load
     window.scrollTo(0, document.body.scrollHeight);
 </script>
 

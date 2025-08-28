@@ -43,45 +43,55 @@ app.use('/users', userRoutes);
 
 // --- Socket.IO Connection Logic ---
 io.on('connection', (socket) => {
-    console.log('A user connected to Socket.IO');
+    console.log('--- A user connected to Socket.IO ---');
 
-    const userId = socket.request.session.userId; // Get user ID from session
+    // DEBUG LOG 1: Check the user ID from the session when the connection starts.
+    const userId = socket.request.session.userId;
+    console.log(`[Socket Connection] User ID from session is: ${userId}`);
 
     socket.on('joinRoom', ({ room }) => {
         socket.join(room);
-        console.log(`User ${userId} joined room: ${room}`);
+        console.log(`[Socket Join] User ${userId} joined room: ${room}`);
     });
 
     socket.on('chatMessage', async ({ room, message }) => {
         if (!userId) {
-            return console.log('Cannot send message: User not authenticated');
+            return console.log('[Socket Chat] ERROR: Cannot send message, user is not authenticated.');
         }
-        
+
         try {
-            // 1. Save the message to the database
-            const newMessage = new Message({
-                room: room,
-                sender: userId,
-                text: message,
-            });
+            const newMessage = new Message({ room, sender: userId, text: message });
             await newMessage.save();
 
-            // 2. Get the sender's details to display their name
+            // DEBUG LOG 2: Check the user object right after we fetch it from the database.
             const user = await User.findById(userId);
+            console.log('[Socket Chat] Fetched user object from DB:', user);
 
-            // 3. Broadcast the message object to the room
+            if (!user) {
+                return console.log('[Socket Chat] ERROR: Sender not found in database.');
+            }
+
+            // Create the plain object for sending
+            const senderInfo = {
+                name: user.name,
+                _id: user._id.toString()
+            };
+
+            // DEBUG LOG 3: Check the final object just before it's sent.
+            console.log('[Socket Chat] Broadcasting this senderInfo object:', senderInfo);
+
             io.to(room).emit('message', {
                 text: message,
-                sender: { name: user.name },
+                sender: senderInfo,
                 createdAt: new Date().toLocaleTimeString(),
             });
         } catch (error) {
-            console.error('Error handling chat message:', error);
+            console.error('[Socket Chat] CRITICAL ERROR:', error);
         }
     });
 
     socket.on('disconnect', () => {
-        console.log('User disconnected');
+        console.log('--- User disconnected ---');
     });
 });
 // --- End Socket.IO Logic ---
