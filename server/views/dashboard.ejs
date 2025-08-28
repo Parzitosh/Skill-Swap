@@ -52,6 +52,13 @@
     <p>No other users have registered yet.</p>
 <% } %>
 <script>
+    window.addEventListener('pageshow', function (event) {
+        // The 'persisted' property is true if the page was loaded from the bfcache
+        if (event.persisted) {
+            // Force a reload of the page from the server
+            window.location.reload();
+        }
+    });
     document.querySelectorAll('.bookmark-btn').forEach(button => {
         button.addEventListener('click', async (e) => {
             const userId = e.target.dataset.userid;

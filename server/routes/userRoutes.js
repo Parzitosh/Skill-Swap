@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, noCache } = require('../middleware/authMiddleware');
 
 // This route shows the registration page
 router.get('/register', userController.showRegisterPage);
@@ -19,7 +19,7 @@ router.post('/login', userController.loginUser);
 
 // --- Protected Routes ---
 // The 'protect' middleware will run before the controller function for these routes.
-router.get('/dashboard', protect, userController.showDashboard);
+router.get('/dashboard', protect, noCache, userController.showDashboard);
 router.get('/profile', protect, userController.showProfilePage);
 router.post('/profile/add-skill-offered', protect, userController.addSkillOffered);
 router.post('/profile/add-skill-needed', protect, userController.addSkillNeeded);
@@ -49,6 +49,6 @@ router.get('/view/:id', protect, userController.showPublicProfile);
 // Route for adding/removing from wishlist
 router.post('/wishlist/toggle/:id', protect, userController.toggleWishlist);
 
-router.get('/wishlist', protect, userController.showWishlist);
+router.get('/wishlist', protect, noCache, userController.showWishlist);
 
 module.exports = router;
