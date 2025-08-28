@@ -1,4 +1,5 @@
 SkillSwap - Peer Learning & Barter Platform 🚀
+
 SkillSwap is a full-stack web application designed to connect individuals who want to learn new skills by bartering their expertise. Built with Node.js, Express, MongoDB, and EJS, this platform allows users to create profiles, list skills, and connect with others through a real-time chat system.
 
 This project was developed as part of the "Back End Engineering-II" (23CS008) course at Chitkara University, demonstrating a comprehensive understanding of modern backend technologies and architecture.
