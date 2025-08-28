@@ -135,29 +135,36 @@ const addSkillNeeded = async (req, res) => {
 
 const showDashboard = async (req, res) => {
     try {
-        // The base query to find all users except the current one
-        const query = { _id: { $ne: req.session.userId } };
-
-        // Check if there is a search term in the URL (e.g., /dashboard?search=Python)
-        if (req.query.search) {
-            // If there is a search term, add a condition to our query.
-            // This will search for users where the 'skillsOffered' array contains the search term.
-            // The '$regex' and '$options: "i"' make the search case-insensitive.
-            query.skillsOffered = { $regex: req.query.search, $options: "i" };
-        }
-
-        // Execute the query to find all users to display
-        const users = await User.find(query);
-        
-        // Fetch the data for the currently logged-in user
         const currentUser = await User.findById(req.session.userId);
+        let users = [];
+        let suggestedMatches = [];
 
-        // Render the dashboard and pass all necessary data to the view
+        // --- Main User Query Logic ---
+        const query = { _id: { $ne: req.session.userId } };
+        if (req.query.search) {
+            query.skillsOffered = { $regex: req.query.search, $options: "i" };
+            users = await User.find(query);
+        } else {
+            // If not searching, fetch all users
+            users = await User.find(query);
+            
+            // --- Skill Matching Logic ---
+            // Find users who offer skills that the current user needs.
+            // The '$in' operator matches any of the values specified in an array.
+            if (currentUser.skillsNeeded && currentUser.skillsNeeded.length > 0) {
+                suggestedMatches = await User.find({
+                    _id: { $ne: req.session.userId }, // Exclude self
+                    skillsOffered: { $in: currentUser.skillsNeeded }
+                });
+            }
+        }
+        
         res.render('dashboard', { 
             title: 'Dashboard', 
             users: users,
+            suggestedMatches: suggestedMatches, // Pass matches to the view
             searchQuery: req.query.search || '',
-            currentUser: currentUser // Pass the current user's data
+            currentUser: currentUser
         });
     } catch (error) {
         res.status(500).send('Server Error');

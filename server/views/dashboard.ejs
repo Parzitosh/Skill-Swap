@@ -24,6 +24,27 @@
 </form>
 <hr>
 
+<% if (suggestedMatches && suggestedMatches.length > 0) { %>
+    <h2>Suggested Matches for You</h2>
+    <p>These users offer skills you're looking for!</p>
+    <% suggestedMatches.forEach(user => { %>
+        <article>
+            <header>
+                <strong><a href="/users/view/<%= user._id %>"><%= user.name %></a></strong>
+                <small>⭐ <%= user.averageRating %> (<%= user.reviewCount %> reviews)</small>
+            </header>
+            <p><strong>Offers:</strong> <%= user.skillsOffered.join(', ') || 'None' %></p>
+            <footer>
+                <form action="/users/request/<%= user._id %>" method="POST">
+                    <button type="submit">Send Swap Request</button>
+                </form>
+            </footer>
+        </article>
+    <% }) %>
+    <hr>
+    <h2>All Users</h2>
+<% } %>
+
 <% if (users && users.length > 0) { %>
     <% users.forEach(user => { %>
         <article>
