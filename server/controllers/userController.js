@@ -19,23 +19,25 @@ const registerUser = async (req, res) => {
             return res.status(400).send('User with this email already exists.');
         }
 
-        // --- HASHING LOGIC ---
-        // 1. Generate a salt
         const salt = await bcrypt.genSalt(10);
-        // 2. Hash the password with the salt
         const hashedPassword = await bcrypt.hash(password, salt);
-        // --- END HASHING LOGIC ---
 
-        // Create a new user instance with the HASHED password
         const newUser = new User({
             name,
             email,
-            password: hashedPassword, // Save the hashed password
+            password: hashedPassword,
         });
 
+        // Save the new user to the database
         await newUser.save();
 
-        res.status(201).send('User registered successfully! You can now log in.');
+        // --- THIS IS THE NEW PART ---
+        // 1. Create a session for the new user immediately after saving
+        req.session.userId = newUser._id;
+
+        // 2. Redirect them to the dashboard
+        res.redirect('/users/dashboard');
+        // --- END OF NEW PART ---
 
     } catch (error) {
         console.error('Error during registration:', error);
